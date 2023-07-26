@@ -41,7 +41,7 @@ func (c DBConnector) GetAllBlocks(limit, offset uint64) ([]*models.Block, error)
 	for rows.Next() {
 
 		block := new(models.Block)
-		if err := rows.Scan(&block.Height, &block.EraId, &block.Timestamp); err != nil {
+		if err := rows.Scan(&block.Hash, &block.Height, &block.EraId, &block.Timestamp); err != nil {
 			return nil, err
 		}
 		blocks = append(blocks, block)
@@ -53,7 +53,7 @@ func (c DBConnector) GetLatestFetchedBlock() (*models.Block, error) {
 	block := new(models.Block)
 	row := c.db.QueryRow(`SELECT "hash", "height", "era_id", "timestamp" FROM "blocks" order by height desc limit 1`)
 
-	err := row.Scan(&block.Height, &block.EraId, &block.Timestamp)
+	err := row.Scan(&block.Hash, &block.Height, &block.EraId, &block.Timestamp)
 
 	if err == sql.ErrNoRows {
 		return nil, nil
@@ -69,7 +69,7 @@ func (c DBConnector) GetBlockByHeight(height uint64) (*models.Block, error) {
 	block := new(models.Block)
 	row := c.db.QueryRow(`SELECT "hash", "height", "era_id", "timestamp" FROM "blocks" where height = $1 order by height desc limit 1`, height)
 
-	err := row.Scan(&block.Height, &block.EraId, &block.Timestamp)
+	err := row.Scan(&block.Hash, &block.Height, &block.EraId, &block.Timestamp)
 
 	if err == sql.ErrNoRows {
 		return nil, nil
